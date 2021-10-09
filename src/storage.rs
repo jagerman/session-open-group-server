@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Mutex;
 
-use log::{error, warn, info};
+use log::{error, info, warn};
 use r2d2_sqlite::SqliteConnectionManager;
 use rusqlite::params;
 use rusqlite_migration::{Migrations, M};
@@ -81,8 +81,11 @@ pub fn pool_by_room_id(room_id: &RoomId) -> Result<DatabaseConnectionPool, Error
     } else {
         let pool = &MAIN_POOL;
         if let Ok(conn) = pool.get() {
-            if let Ok(count) = conn.query_row("SELECT COUNT(*) FROM main WHERE id = ?", params![room_id.get_id()],
-                |row| row.get::<_, i64>(0)) {
+            if let Ok(count) = conn.query_row(
+                "SELECT COUNT(*) FROM main WHERE id = ?",
+                params![room_id.get_id()],
+                |row| row.get::<_, i64>(0),
+            ) {
                 if count == 0 {
                     warn!("Cannot access room database: room {} does not exist", room_id.get_id());
                     return Err(Error::NoSuchRoom);
@@ -214,7 +217,7 @@ async fn prune_tokens() {
     for room in rooms {
         let pool = match pool_by_room_id(&room) {
             Ok(p) => p,
-            Err(_) => return
+            Err(_) => return,
         };
         // It's not catastrophic if we fail to prune the database for a given room
         let conn = match pool.get() {
@@ -240,7 +243,7 @@ async fn prune_pending_tokens() {
     for room in rooms {
         let pool = match pool_by_room_id(&room) {
             Ok(p) => p,
-            Err(_) => return
+            Err(_) => return,
         };
         // It's not catastrophic if we fail to prune the database for a given room
         let conn = match pool.get() {

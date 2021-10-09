@@ -411,7 +411,8 @@ fn get_pool_for_room(rpc_call: &RpcCall) -> Result<storage::DatabaseConnectionPo
     let room_id = get_room_id(&rpc_call).ok_or(Error::ValidationFailed)?;
     return storage::pool_by_room_id(
         &storage::RoomId::new(&room_id).ok_or(Error::ValidationFailed)?,
-    ).map_err(|e| e.into());
+    )
+    .map_err(|e| e.into());
 }
 
 fn get_auth_token(rpc_call: &RpcCall) -> Option<String> {
