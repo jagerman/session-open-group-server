@@ -117,7 +117,10 @@ async fn test_file_handling() {
     result.unwrap_err();
 }
 
+// Run with `cargo test --features "github"` to run.
+// Not enabled by default because github API rate limits quite heavily.
 #[tokio::test]
+#[cfg(feature = "github")]
 async fn test_session_version_endpoint() {
     let ios = handlers::get_session_version("ios").await.unwrap();
     assert_eq!(handlers::SESSION_VERSIONS.read().clone()["ios"].1, ios);
